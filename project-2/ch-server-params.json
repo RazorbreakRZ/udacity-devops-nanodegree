@@ -1,0 +1,26 @@
+[
+	{
+		"ParameterKey": "EnvironmentName",
+		"ParameterValue": "UdacityChallenge"
+	},
+	{
+		"ParameterKey": "AmiID",
+		"ParameterValue": "ami-053b0d53c279acc90"
+	},
+	{
+		"ParameterKey": "KeyPair",
+		"ParameterValue": "UdacityChallenge"
+	},
+	{
+		"ParameterKey": "MinAsgSize",
+		"ParameterValue": "0"
+	},
+	{
+		"ParameterKey": "MaxAsgSize",
+		"ParameterValue": "1"
+	},
+	{
+		"ParameterKey": "AsgCapacity",
+		"ParameterValue": "1"
+	}
+]
