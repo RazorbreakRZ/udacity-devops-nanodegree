@@ -22,5 +22,9 @@
 	{
 		"ParameterKey": "AsgCapacity",
 		"ParameterValue": "4"
+	},
+	{
+		"ParameterKey": "WebAppInstanceFamily",
+		"ParameterValue": "t3a.medium"
 	}
 ]

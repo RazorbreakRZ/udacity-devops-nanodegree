@@ -38,6 +38,9 @@ Parameters:
   AsgCapacity:
     Description: ASG target size
     Type: String
+  WebAppInstanceFamily:
+    Description: EC2 instance family for WebApp
+    Type: String
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -203,6 +206,12 @@ Resources:
       RouteTableId: !Ref PrivateBRouteTable
       SubnetId: !Ref PrivateSubnetB
 
+  WebAppS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicPolicy: True
+
   WebAppSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -253,6 +262,10 @@ Resources:
           Action:
           - 'ssm:*'
           Resource: '*'
+        - Effect: Allow
+          Action:
+          - 's3:*'
+          Resource: '*'
       Roles:
         - !Ref WebAppIamRole
   WebAppIamProfile:
@@ -268,20 +281,25 @@ Resources:
           LaunchTemplateName: !Sub ${EnvironmentName}-WEBAPP-LT
           LaunchTemplateData:
             UserData:
-              Fn::Base64: !Sub |
-                #!/bin/bash
-                apt-get update -y
-                apt-get install apache2 -y
-                systemctl start apache2.service
-                cd /var/www/html
-                echo "Udacity Demo Web Server Up and Running!" > index.html
+              Fn::Base64: 
+                !Sub
+                  - | 
+                    #!/bin/bash
+                    apt-get update -y
+                    apt-get install apache2 unzip -y
+                    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+                    unzip awscliv2.zip
+                    ./aws/install
+                    aws s3 sync s3://${webapps3bucket} /var/www/html --delete
+                    systemctl start apache2.service
+                  - webapps3bucket: !Ref WebAppS3Bucket
             ImageId: !Ref AmiID
             KeyName: !Ref KeyPair
             IamInstanceProfile: 
               Name: !Ref WebAppIamProfile
             SecurityGroupIds:
               - !Ref WebAppSecurityGroup
-            InstanceType: t3a.medium
+            InstanceType: !Ref WebAppInstanceFamily
             BlockDeviceMappings:
             - DeviceName: "/dev/sdk"
               Ebs:
@@ -401,3 +419,8 @@ Outputs:
     Value: !Ref PublicLoadBalancer
     Export:
       Name: !Sub ${EnvironmentName}-PUB-ELB
+  WebAppS3BucketName:
+    Description: S3 Bucket where to store the WebApp HTML files
+    Value: !Ref WebAppS3Bucket
+    Export:
+      Name: !Sub ${EnvironmentName}-WEBAPP-S3BUCKET

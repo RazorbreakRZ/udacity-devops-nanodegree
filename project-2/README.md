@@ -1,11 +1,9 @@
-### Project Title - Deploy a high-availability web app using CloudFormation
-This folder provides the starter code for the "ND9991 - C2- Infrastructure as Code - Deploy a high-availability web app using CloudFormation" project. This folder contains the following files:
+### Project Title - Deploy a high-availability web app using CloudFormation (Udagram)
 
+The project is delivered as a single YAML file. Instead of separating the project in different logic blocks (like network, load balancers, asgs, etc), I've decided to merge everything in a single one because is easier to deploy/delete using the companion shell script.
 
-#### final-project-starter.yml
-Students have to write the CloudFormation code using this YAML template for building the cloud infrastructure, as required for the project. 
-
-#### server-parameters.json
-Students may use a JSON file for increasing the generic nature of the YAML code. For example, the JSON file contains a "ParameterKey" as "EnvironmentName" and "ParameterValue" as "UdacityProject". 
-
-In YAML code, the `${EnvironmentName}` would be substituted with `UdacityProject` accordingly.
+Additional decissions taken to requested project:
+- The AMI used was an Ubuntu 22: the Ubuntu 18 is not available anymore and use the latest supported version is always a good choice :)
+- Instead of using a Launch Configuration for the AutoScaling Group, I've decided to update it to a Launch Template, because the first is entering in a deprecation state https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-configurations.html
+- Also, instead of using a JumpBox (or bastion host) I've added SSM permissions to remotelly connect to the EC2 instances in the private subnets using Session Manager (via web console or cli). This way we prevent to expose a single machine to the internet.
+- For the website, I've decided to provide the webapp files from an S3 Bucket which is created by the stack and configures the Launch Template of the WebApp ASG. The files must be uploaded manually using the s3-sync shell script and the policy of the bucket allows its entire deletion to ensure no files remain in the environment once the stack is deleted. To prevent colision of the stack during the deployment in multiple environments, I've decided to let CloudFormation to set the name of the bucket dynamically, exposing its value as an Output so I can configure the shell script to upload the files.
