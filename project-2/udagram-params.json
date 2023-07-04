@@ -1,7 +1,7 @@
 [
 	{
 		"ParameterKey": "EnvironmentName",
-		"ParameterValue": "UdacityChallenge"
+		"ParameterValue": "Udagram"
 	},
 	{
 		"ParameterKey": "AmiID",
@@ -17,10 +17,10 @@
 	},
 	{
 		"ParameterKey": "MaxAsgSize",
-		"ParameterValue": "1"
+		"ParameterValue": "4"
 	},
 	{
 		"ParameterKey": "AsgCapacity",
-		"ParameterValue": "1"
+		"ParameterValue": "4"
 	}
 ]
