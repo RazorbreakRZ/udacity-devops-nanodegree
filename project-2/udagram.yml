@@ -252,6 +252,7 @@ Resources:
 
   WebAppS3Bucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
     Properties:
       PublicAccessBlockConfiguration:
         BlockPublicPolicy: True
@@ -334,7 +335,7 @@ Resources:
                     systemctl start apache2.service
                   - webapps3bucket: !Ref WebAppS3Bucket
             ImageId: !Ref AmiID
-            KeyName: !Ref KeyPair
+            # KeyName: !Ref KeyPair
             IamInstanceProfile: 
               Name: !Ref WebAppIamProfile
             SecurityGroupIds:
@@ -347,10 +348,10 @@ Resources:
   WebAppTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 10
+      HealthCheckIntervalSeconds: 30
       HealthCheckPath: /
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 8
+      HealthCheckTimeoutSeconds: 15
       HealthyThresholdCount: 2
       Port: 80
       Protocol: HTTP

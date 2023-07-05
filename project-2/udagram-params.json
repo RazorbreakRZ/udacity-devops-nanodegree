@@ -8,12 +8,8 @@
 		"ParameterValue": "ami-053b0d53c279acc90"
 	},
 	{
-		"ParameterKey": "KeyPair",
-		"ParameterValue": "UdacityChallenge"
-	},
-	{
 		"ParameterKey": "MinAsgSize",
-		"ParameterValue": "0"
+		"ParameterValue": "2"
 	},
 	{
 		"ParameterKey": "MaxAsgSize",
