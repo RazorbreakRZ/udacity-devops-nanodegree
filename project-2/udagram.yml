@@ -26,9 +26,6 @@ Parameters:
   AmiID:
     Description: AMI image to be used
     Type: AWS::EC2::Image::Id
-  KeyPair:
-    Description: KeyPair for SSH connection
-    Type: AWS::EC2::KeyPair::KeyName
   MinAsgSize:
     Description: Min ASG size
     Type: String
@@ -335,7 +332,6 @@ Resources:
                     systemctl start apache2.service
                   - webapps3bucket: !Ref WebAppS3Bucket
             ImageId: !Ref AmiID
-            # KeyName: !Ref KeyPair
             IamInstanceProfile: 
               Name: !Ref WebAppIamProfile
             SecurityGroupIds:
