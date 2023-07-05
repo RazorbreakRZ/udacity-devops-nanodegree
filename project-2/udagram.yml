@@ -206,6 +206,50 @@ Resources:
       RouteTableId: !Ref PrivateBRouteTable
       SubnetId: !Ref PrivateSubnetB
 
+  PublicELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for public load balancer
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+        Description: Allow HTTP traffic from internet to ELB
+      SecurityGroupEgress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: !Ref VpcCIDR
+        Description: Allow connection to WebApp
+      Tags: 
+        - Key: Name 
+          Value: !Sub ${EnvironmentName}-PUB-ELB-SG
+  PublicLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      Type: application
+      IpAddressType: ipv4
+      Scheme: internet-facing
+      SecurityGroups: 
+        - !Ref PublicELBSecurityGroup
+      Subnets: 
+        - !Ref PublicSubnetA
+        - !Ref PublicSubnetB
+      Tags: 
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-PUB-ELB
+  PublicLoadBalancerHttpListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties: 
+      LoadBalancerArn: !Ref PublicLoadBalancer
+      Protocol: HTTP
+      Port: 80
+      DefaultActions: 
+        - Type: forward
+          TargetGroupArn: !Ref WebAppTargetGroup
+
   WebAppS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -332,50 +376,7 @@ Resources:
         - Key: Name 
           Value: !Sub ${EnvironmentName}-WEBAPP
           PropagateAtLaunch: true
-  PublicELBSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Security group for public load balancer
-      VpcId: !Ref VPC
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
-        CidrIp: 0.0.0.0/0
-        Description: Allow HTTP traffic from internet to ELB
-      SecurityGroupEgress:
-      - IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
-        CidrIp: !Ref VpcCIDR
-        Description: Allow connection to WebApp
-      Tags: 
-        - Key: Name 
-          Value: !Sub ${EnvironmentName}-PUB-ELB-SG
-  PublicLoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties: 
-      Type: application
-      IpAddressType: ipv4
-      Scheme: internet-facing
-      SecurityGroups: 
-        - !Ref PublicELBSecurityGroup
-      Subnets: 
-        - !Ref PublicSubnetA
-        - !Ref PublicSubnetB
-      Tags: 
-        - Key: Name
-          Value: !Sub ${EnvironmentName}-PUB-ELB
-  PublicLoadBalancerHttpListener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties: 
-      LoadBalancerArn: !Ref PublicLoadBalancer
-      Protocol: HTTP
-      Port: 80
-      DefaultActions: 
-        - Type: forward
-          TargetGroupArn: !Ref WebAppTargetGroup
-
+  
 Outputs:
   VPC:
     Description: A reference to the created VPC
