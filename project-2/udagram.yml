@@ -423,8 +423,13 @@ Outputs:
     Value: !Ref WebAppSecurityGroup
     Export:
       Name: !Sub ${EnvironmentName}-WEBAPP-SG
-  ELBSecurityGroupId:
+  PublicLoadBalancerSecurityGroupId:
     Description: Load Balancer security group id
     Value: !Ref PublicELBSecurityGroup
     Export:
       Name: !Sub ${EnvironmentName}-PUB-ELB-SG
+  PublicLoadBalancerHttpListener:
+    Description: Load Balancer security group id
+    Value: !Ref PublicLoadBalancerHttpListener
+    Export:
+      Name: !Sub ${EnvironmentName}-PUB-ELB-LS-HTTP
