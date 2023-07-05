@@ -221,12 +221,8 @@ Resources:
       - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
-        CidrIp: !Ref VpcCIDR
+        SourceSecurityGroupId: !Ref PublicELBSecurityGroup
         Description: Allow HTTP traffic from VPC network
-      # - IpProtocol: tcp
-      #   FromPort: 22
-      #   ToPort: 22
-      #   CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
       - IpProtocol: tcp
         FromPort: 0
@@ -349,10 +345,10 @@ Resources:
         Description: Allow HTTP traffic from internet to ELB
       SecurityGroupEgress:
       - IpProtocol: tcp
-        FromPort: 0
-        ToPort: 65535
-        CidrIp: 0.0.0.0/0
-        Description: Allow internet access
+        FromPort: 80
+        ToPort: 80
+        CidrIp: !Ref VpcCIDR
+        Description: Allow connection to WebApp
       Tags: 
         - Key: Name 
           Value: !Sub ${EnvironmentName}-PUB-ELB-SG
@@ -424,3 +420,13 @@ Outputs:
     Value: !Ref WebAppS3Bucket
     Export:
       Name: !Sub ${EnvironmentName}-WEBAPP-S3BUCKET
+  WebAppSecurityGroupId:
+    Description: WebApp security group id
+    Value: !Ref WebAppSecurityGroup
+    Export:
+      Name: !Sub ${EnvironmentName}-WEBAPP-SG
+  ELBSecurityGroupId:
+    Description: Load Balancer security group id
+    Value: !Ref PublicELBSecurityGroup
+    Export:
+      Name: !Sub ${EnvironmentName}-PUB-ELB-SG
